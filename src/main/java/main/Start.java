@@ -4,25 +4,29 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import pom.LoginPage;
+import pom.HomePage;
+import pom.ReserveFlightPage;
 
 public class Start {
 
 	WebDriver driver;
 	FileInputStream readProperty;
-	LoginPage login;
+	HomePage homePage;
+	ReserveFlightPage reserveFlightPage;
 
 	@BeforeTest
 	private void prepareClassProperties() throws IOException {
 		readProperty = new FileInputStream(
-				"C:\\Users\\G525585\\eclipse-workspace\\AutomateParaBankWebApplication\\src\\main\\java\\properties\\generalProperties.properties");
+				"C:\\Users\\G525585\\eclipse-workspace\\AutomateBlazeDemoWebApplication\\src\\main\\java\\properties\\generalProperties.properties");
 		Properties prop = new Properties();
 		prop.load(readProperty);
 
@@ -30,7 +34,7 @@ public class Start {
 		System.setProperty("webdriver.chrome.driver", prop.getProperty("chromedriver"));
 
 		driver = new ChromeDriver();
-		login = new LoginPage(driver);
+		homePage = new HomePage(driver);
 	}
 
 	@Test(priority = 1)
@@ -40,25 +44,37 @@ public class Start {
 		driver.manage().window().maximize();
 
 		// navigate to website
-		driver.get("https://parabank.parasoft.com/parabank/index.htm");
+		driver.get("https://blazedemo.com/");
 
 		// wait for 5 sec
 		Thread.sleep(5000);
 	}
 
 	@Test(priority = 2)
-	private void login() throws InterruptedException {
+	private void searchFlights() throws InterruptedException {
 
-		login.userName.sendKeys("john");
+		Select departureCountry = new Select(homePage.departureCity);
 
-		login.userPassword.sendKeys("demo");
+		departureCountry.selectByVisibleText("San Diego");
 
-		login.loginButton.click();
+		Select destinationCountry = new Select(homePage.destinationCity);
 
-		// wait for 10 sec
-		Thread.sleep(10000);
+		destinationCountry.selectByVisibleText("London");
 
-		Assert.assertEquals(driver.getPageSource().contains("Accounts Overview"), true);
+		homePage.findFlights.click();
+
+		// wait for 4 sec
+		Thread.sleep(4000);
+
+		Assert.assertEquals(driver.getPageSource().contains("Airline"), true);
+	}
+	
+	@Test(priority = 3)
+	private void chooseFlights() throws InterruptedException {
+		
+		reserveFlightPage=new ReserveFlightPage(driver);
+		
+		reserveFlightPage.chooseFlight.click();	
 	}
 
 	@AfterTest
