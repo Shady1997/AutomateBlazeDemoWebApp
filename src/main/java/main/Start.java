@@ -96,29 +96,32 @@ public class Start {
 		// declare javascript executer object
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("window.scrollBy(0,100)", "");
-		
+
 		purchasePage.clientState.sendKeys("Abu Kabir");
-		
+
 		purchasePage.clientZipCode.sendKeys("44671");
-		
-		Select cardType=new Select(purchasePage.cardType);
+
+		Select cardType = new Select(purchasePage.cardType);
 		cardType.selectByVisibleText("American Express");
-		
+
 		purchasePage.creditCardNumber.sendKeys("123456789");
-		
+
 		purchasePage.creditCardMonth.sendKeys("9");
-		
+
 		purchasePage.creditCardYear.sendKeys("1997");
-		
+
 		js.executeScript("window.scrollBy(0,100)", "");
-		
+
 		purchasePage.nameOnCard.sendKeys("Shady Gomaa");
-		
+
 		purchasePage.rememberMe.click();
-		
+
 		purchasePage.purchaseFlight.click();
 
-		Assert.assertEquals(driver.getPageSource().contains("Your flight from TLV to SFO has been reserved"), true);
+		Assert.assertEquals(driver.getPageSource().contains("Thank you for your purchase today!"), true);
+
+		// wait for 5 sec
+		Thread.sleep(5000);
 	}
 
 	@AfterTest

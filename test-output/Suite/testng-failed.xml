@@ -5,7 +5,8 @@
     <classes>
       <class name="main.Start">
         <methods>
-          <include name="login"/>
+          <include name="purchaseFlight"/>
+          <include name="closeApplication"/>
           <include name="prepareClassProperties"/>
         </methods>
       </class> <!-- main.Start -->
