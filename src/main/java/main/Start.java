@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -14,6 +15,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import pom.HomePage;
+import pom.PurchasePage;
 import pom.ReserveFlightPage;
 
 public class Start {
@@ -22,6 +24,7 @@ public class Start {
 	FileInputStream readProperty;
 	HomePage homePage;
 	ReserveFlightPage reserveFlightPage;
+	PurchasePage purchasePage;
 
 	@BeforeTest
 	private void prepareClassProperties() throws IOException {
@@ -68,13 +71,54 @@ public class Start {
 
 		Assert.assertEquals(driver.getPageSource().contains("Airline"), true);
 	}
-	
+
 	@Test(priority = 3)
-	private void chooseFlights() throws InterruptedException {
+	private void chooseFlight() throws InterruptedException {
+
+		reserveFlightPage = new ReserveFlightPage(driver);
+
+		reserveFlightPage.chooseFlight.click();
+
+		Assert.assertEquals(driver.getPageSource().contains("Your flight from TLV to SFO has been reserved"), true);
+	}
+
+	@Test(priority = 4)
+	private void purchaseFlight() throws InterruptedException {
+
+		purchasePage = new PurchasePage(driver);
+
+		purchasePage.clientName.sendKeys("Shady Ahmed");
+
+		purchasePage.clientAddress.sendKeys("13 Mostafa kamel street");
+
+		purchasePage.clientCity.sendKeys("El Sharkia");
+
+		// declare javascript executer object
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("window.scrollBy(0,100)", "");
 		
-		reserveFlightPage=new ReserveFlightPage(driver);
+		purchasePage.clientState.sendKeys("Abu Kabir");
 		
-		reserveFlightPage.chooseFlight.click();	
+		purchasePage.clientZipCode.sendKeys("44671");
+		
+		Select cardType=new Select(purchasePage.cardType);
+		cardType.selectByVisibleText("American Express");
+		
+		purchasePage.creditCardNumber.sendKeys("123456789");
+		
+		purchasePage.creditCardMonth.sendKeys("9");
+		
+		purchasePage.creditCardYear.sendKeys("1997");
+		
+		js.executeScript("window.scrollBy(0,100)", "");
+		
+		purchasePage.nameOnCard.sendKeys("Shady Gomaa");
+		
+		purchasePage.rememberMe.click();
+		
+		purchasePage.purchaseFlight.click();
+
+		Assert.assertEquals(driver.getPageSource().contains("Your flight from TLV to SFO has been reserved"), true);
 	}
 
 	@AfterTest
